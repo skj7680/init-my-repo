@@ -1,9 +1,8 @@
 export interface User {
   id: number
+  username: string
   email: string
-  full_name: string
   role: "farmer" | "vet" | "admin"
-  farm_id?: number
   is_active: boolean
   created_at: string
 }
@@ -11,8 +10,8 @@ export interface User {
 export interface Farm {
   id: number
   name: string
-  location: string
-  size_hectares: number
+  location?: string
+  timezone: string
   owner_id: number
   created_at: string
 }
@@ -20,10 +19,12 @@ export interface Farm {
 export interface Animal {
   id: number
   tag_number: string
-  name?: string
-  breed: string
-  birth_date: string
-  gender: "male" | "female"
+  breed?: string
+  dob?: string
+  sex?: string
+  parity: number
+  current_weight?: number
+  lactation_start_date?: string
   farm_id: number
   is_active: boolean
   created_at: string
@@ -33,11 +34,12 @@ export interface MilkRecord {
   id: number
   animal_id: number
   date: string
-  morning_yield: number
-  evening_yield: number
-  total_yield: number
-  fat_content?: number
-  protein_content?: number
+  morning_l: number
+  evening_l: number
+  total_l?: number
+  fat_percentage?: number
+  protein_percentage?: number
+  somatic_cell_count?: number
   created_at: string
 }
 
@@ -45,31 +47,40 @@ export interface DiseaseRecord {
   id: number
   animal_id: number
   disease_name: string
-  symptoms: string
   diagnosis_date: string
+  severity?: string
   treatment?: string
   recovery_date?: string
-  severity: "low" | "medium" | "high"
+  vet_notes?: string
+  is_resolved: boolean
   created_at: string
 }
 
-export interface Prediction {
-  animal_id: number
-  prediction_type: "milk_yield" | "disease_risk"
-  predicted_value: number
-  confidence: number
+export interface MilkPrediction {
+  animal_id: string
+  predicted_milk_yield: number
+  confidence_score: number
   factors: Record<string, any>
-  created_at: string
+}
+
+export interface DiseasePrediction {
+  animal_id: string
+  disease_risk: number
+  risk_level: string
+  recommended_actions: string[]
+  confidence_score: number
 }
 
 export interface Alert {
   id: number
-  animal_id: number
+  animal_id?: number
+  farm_id?: number
   alert_type: string
+  severity: string
   message: string
-  severity: "low" | "medium" | "high"
   is_resolved: boolean
   created_at: string
+  resolved_at?: string
 }
 
 export interface AuthState {
@@ -90,4 +101,81 @@ export interface PaginatedResponse<T> {
   page: number
   size: number
   pages: number
+}
+
+// Form interfaces
+export interface LoginRequest {
+  username: string
+  password: string
+}
+
+export interface RegisterRequest {
+  username: string
+  email: string
+  password: string
+  role: "farmer" | "vet" | "admin"
+}
+
+export interface AnimalCreateRequest {
+  tag_number: string
+  breed?: string
+  dob?: string
+  sex?: string
+  parity: number
+  current_weight?: number
+  lactation_start_date?: string
+  farm_id: number
+}
+
+export interface FarmCreateRequest {
+  name: string
+  location?: string
+  timezone: string
+}
+
+export interface MilkRecordCreateRequest {
+  animal_id: number
+  date: string
+  morning_l: number
+  evening_l: number
+  fat_percentage?: number
+  protein_percentage?: number
+  somatic_cell_count?: number
+}
+
+export interface DiseaseRecordCreateRequest {
+  animal_id: number
+  disease_name: string
+  diagnosis_date: string
+  severity?: string
+  treatment?: string
+  vet_notes?: string
+}
+
+export interface MilkPredictionRequest {
+  animal_id: string
+  breed: string
+  age_months: number
+  parity: number
+  weight_kg: number
+  feed_quantity_kg: number
+  protein_content_percent: number
+  temperature_c: number
+  humidity_percent: number
+  activity_hours: number
+  rumination_hours: number
+  health_score: number
+}
+
+export interface DiseasePredictionRequest {
+  animal_id: string
+  breed: string
+  age_months: number
+  parity: number
+  health_score: number
+  activity_hours: number
+  rumination_hours: number
+  milk_yield_trend: number
+  temperature_c: number
+  humidity_percent: number
 }

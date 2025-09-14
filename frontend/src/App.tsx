@@ -1,32 +1,29 @@
-"use client"
-
-import type React from "react"
-import { useEffect } from "react"
-import { Routes, Route, Navigate } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
-import { Layout, Spin } from "antd"
-import type { RootState, AppDispatch } from "./store/store"
-import { checkAuth } from "./store/slices/authSlice"
-import Login from "./pages/Login"
-import Register from "./pages/Register"
-import Dashboard from "./pages/Dashboard"
-import Animals from "./pages/Animals"
-import Farms from "./pages/Farms"
-import MilkRecords from "./pages/MilkRecords"
-import Diseases from "./pages/Diseases"
-import Predictions from "./pages/Predictions"
-import Reports from "./pages/Reports"
-import MainLayout from "./components/Layout/MainLayout"
-import ProtectedRoute from "./components/Auth/ProtectedRoute"
+import React, { useEffect } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Layout, Spin } from 'antd'
+import type { RootState, AppDispatch } from './store/store'
+import { getCurrentUser } from './store/slices/authSlice'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Dashboard from './pages/Dashboard'
+import Animals from './pages/Animals'
+import Farms from './pages/Farms'
+import MilkRecords from './pages/MilkRecords'
+import Diseases from './pages/Diseases'
+import Predictions from './pages/Predictions'
+import Reports from './pages/Reports'
+import MainLayout from './components/Layout/MainLayout'
+import ProtectedRoute from './components/Auth/ProtectedRoute'
 
 const App: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { user, isLoading } = useSelector((state: RootState) => state.auth)
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem('token')
     if (token) {
-      dispatch(checkAuth())
+      dispatch(getCurrentUser())
     }
   }, [dispatch])
 

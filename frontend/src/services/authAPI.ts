@@ -7,52 +7,53 @@ export interface LoginResponse {
   user: User
 }
 
-export interface RegisterRequest {
-  email: string
-  password: string
-  full_name: string
-  role: "farmer" | "vet" | "admin"
-  farm_id?: number
-}
-
 export const authAPI = {
-  login: async (email: string, password: string): Promise<LoginResponse> => {
+  login: async (username: string, password: string): Promise<LoginResponse> => {
     const formData = new FormData()
-    formData.append("username", email)
+    formData.append("username", username)
     formData.append("password", password)
 
-    const response = await api.post("/auth/login", formData, {
+    const response = await api.post("/api/auth/login", formData, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     })
-    return response.data
+    
+    // Get user info after login
+    const userResponse = await api.get("/api/auth/me", {
+      headers: {
+        Authorization: `Bearer ${response.data.access_token}`
+      }
+    })
+    
+    return {
+      ...response.data,
+      user: userResponse.data
+    }
   },
 
   register: async (
-    email: string,
+    username: string,
     password: string,
-    full_name: string,
+    email: string,
     role: "farmer" | "vet" | "admin",
-    farm_id?: number,
   ): Promise<User> => {
-    const response = await api.post("/auth/register", {
-      email,
+    const response = await api.post("/api/auth/register", {
+      username,
       password,
-      full_name,
+      email,
       role,
-      farm_id,
     })
     return response.data
   },
 
   getCurrentUser: async (): Promise<User> => {
-    const response = await api.get("/auth/me")
+    const response = await api.get("/api/auth/me")
     return response.data
   },
 
   refreshToken: async (): Promise<LoginResponse> => {
-    const response = await api.post("/auth/refresh")
+    const response = await api.post("/api/auth/refresh")
     return response.data
   },
 }
